@@ -1,0 +1,235 @@
+interview..
+
+middleware??
+automation?
+
+
+https://www.ssllabs.com
+https://github.com/ssllabs/research/wiki/SSL-Server-Rating-Guide
+
+
+SSL Cipher: https://ssl-config.mozilla.org/
+https://wiki.mozilla.org/Security/Server_Side_TLS
+
+Linux ..??
+
+
+what exactly interms of tasks for a BAU?
+
+upgrades?
+
+terraform..
+
+network
+NFS
+
+
+release, upgrades frequency
+SME on what?
+
+design of architecture?
+
+any recent challenges that u reslved?
+
+
+terraform automation
+CI - pipelines
+
+
+serverless ?
+terraform is infra?
+
+does that have app?
+
+-- ansible sequence/precedence
+
+Ansible searches for ansible.cfg in these locations in order:
+
+        ANSIBLE_CONFIG (environment variable if set)
+
+        ansible.cfg (in the current directory)
+
+        ~/.ansible.cfg (in the home directory)
+
+        /etc/ansible/ansible.cfg
+
+-- docker swarm 
+
+-- docker same port (Using a Reverse Proxy to run multiple containers on one server)
+HAProxy, Nginx 
+
+-- k8s - cant be part of a namespace (volumes, nodes...) - they are global
+		cant be shared (config-maps, secrets..)
+
+-- Helm -- package manager, template engine, release (v2)
+
+-- rc vs chkconfig
+
+-- shell vs kernel
+
+-- list hidden, or only softlinks
+
+-- precedence for variables
+
+Command line.
+Config file thats name is declared on the command line.
+Environment vars
+Local config file (if exists)
+Global config file (if exists)
+
+-- enable/disable
+Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service to /usr/lib/systemd/system/docker.service.
+
+umask 033
+file 644
+foler 755
+
+RUN yarn install --production
+ CMD ["node", "src/index.js"]
+ 
+
+The headless service is like normal services but without the Cluster IP. It enables direct access to pods without the need for a proxy
+
+Kubernetes Master include the API server, the controller manager, the Scheduler, and the etcd components
+
+PV v/s PVC
+A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes. ... A PersistentVolumeClaim (PVC) is a request for storage by a user. It is similar to a Pod. Pods consume node resources and PVCs consume PV resources.
+
+Kubernetes v1.20 supports clusters with up to 5000 nodes. More specifically, Kubernetes is designed to accommodate configurations that meet all of the following criteria:
+
+    No more than 100 pods per node
+    No more than 5000 nodes
+    No more than 150000 total pods
+    No more than 300000 total containers
+	
+
+===========================
+git as  admin or user?
+git staging areaN
+git stash
+git fork vs clone
+git rebase
+
+
+A fork is a copy of the repository that we own and have full permissions to change and edit, which will get created under our personal account at GitHub. Once your fork is created, complete the following steps to open the web-based text editor
+
+==================
+
+oracle--
+DDL - create database, schema, constraints, users, tables, grant, revoke
+DML - insert, update or delete records, 
+
+
+jenkins::
+- groovy samples
+
+
+
+===============
+
+python
+
+List items are ordered, changeable, and allow duplicate values.
+
+List items are indexed, the first item has index [0], the second item has index [1] etc.
+When we say that lists are ordered, it means that the items have a defined order, and that order will not change.
+
+If you add new items to a list, the new items will be placed at the end of the list.
+mylist = ["apple", "banana", "cherry"]
+
+List Comprehension
+
+List comprehension offers a shorter syntax when you want to create a new list based on the values of an existing list.
+===
+
+Tuple items are ordered, unchangeable, and allow duplicate values.
+thistuple = ("apple", "banana", "cherry")
+
+===
+
+A set is a collection which is both unordered and unindexed.
+thisset = {"apple", "banana", "cherry"}
+
+=====
+Dictionary items are ordered, changeable, and does not allow duplicates.
+thisdict = {
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+
+
+=================================================
+
+WLS Provider updated to have IDCS provider as the last
+
+
+We ran into issues with IDCS provider being first created more calls to IDCS
+Python data type:
+str
+Numeric Types: 	int, float, complex
+Sequence Types: 	list, tuple, range
+Mapping Type: 	dict
+Set Types: 	set, frozenset
+Boolean Type: 	bool
+Binary Types: 	bytes, bytearray, memoryview
+
+List items are ordered, changeable, and allow duplicate values.
+
+List items are indexed, the first item has index [0], the second item has index [1] etc.
+When we say that lists are ordered, it means that the items have a defined order, and that order will not change.
+
+If you add new items to a list, the new items will be placed at the end of the list.
+mylist = ["apple", "banana", "cherry"]
+
+List Comprehension
+
+List comprehension offers a shorter syntax when you want to create a new list based on the values of an existing list.
+===
+
+Tuple items are ordered, unchangeable, and allow duplicate values.
+thistuple = ("apple", "banana", "cherry")
+
+===
+
+A set is a collection which is both unordered and unindexed.
+thisset = {"apple", "banana", "cherry"}
+
+=====
+Dictionary items are ordered, changeable, and does not allow duplicates.
+thisdict = {
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+
+
+automation
+HA
+DR
+
+
+======================
+
+Sample k82 deployment:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	labels:
+		run: nginx
+	name: nginx-deploy-main
+spec:
+	replicas: 1
+	selector:
+		matchLabels: 
+			run: nginx-main
+	template:
+		metadata:
+			labels:
+				run: nginx-main
+		spec:
+			containers:
+			- image: nginx
+			  name: nginx
+			  

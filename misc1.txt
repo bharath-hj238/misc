@@ -1,0 +1,414 @@
+OAUTh and JWT are required due to HTTP as its stateless and needs be authorised
+
+Session token:
+- used so that we dont have to autheticate again and also store previous cached info
+- issue is with distributed setup and caching the tokens
+- can be over come by shared session cache (on redis) - drawback also - as its a SPOF
+- sticky sessions also can be used
+
+OAUTH 2.0: Provide limited access across applications
+- to authorize (not aithenticate)
+- only between services 
+- delegate access to an application via an oauth flow
+
+JWT: a JSON token stored on the client side, split into three parts base64 encoded (header, payload, signature)
+- to authorize (not aithenticate)
+- token is signed and generated on server
+- but the same token is stored and shared by client on every request-acknowledge
+
+(private APIs will require authentication using authorization headers with basic auth, a bearer token header using a JWT (Javascript Web Token), or with a public key X.509 certificate and corresponding private key)
+
+sudo vs su:
+- sudo provides an elevated access without changing identity
+- su allows the user to switch to a different user
+
+=================================================================================================:
+
+SQS:
+- long polling, reduces emtpy responses and also reduces cost
+- Queue metadata has 10 atttibutes
+- queueing theory - (mathematical study of the formation, function, and congestion of waiting lines, or queues) queue with no buffer meaning no wait time
+- queueing theory - Routing algorithms, Mean field limits, Heavy traffic/diffusion approximations, etc..
+- Queue behaviour: Balking (skip as queue is too long), jockeying (switch queues), reneging (leave after a while)
+- require choosing a queuing system from the Kendall notation before calculating inputs
+- realwordl examples: elevator mirrors, menu on the table, loading page!, kahoot games, explain why the wait (plane pilots), waiting provokes anxiety, 
+
+=================================================================================================:
+
+Docker runtime metrics:
+- cgroups (v1 and v2) - paths:
+- monitor resource utilization with cgroups - durng runtime and when the application is stopped
+- use docker stats to fetch live resource utilization of a container
+
+- error IDs:
+126, 127, 128+n, 130 
+
+=================================================================================================:
+
+ETL: Extract, Transform, Load (Prometheus)
+APM: Application Performance Management (Datadog/Dynatrace)
+DAG: Directed Acyclic Graph (Python Prefect)
+RPC: Remote Procedure Calls (gRPC) - form of inter-process communication (IPC)
+API: Application Programming Interface
+Stub: A piece of code in distributed computing that converts parameters passed between client and server during a remote procedure call (RPC)
+
+Web Service:
+Web API:
+REST API:
+
+SOA: (Service Oriented Architecture)
+OOA: (Object Oriented Architecture)
+ROA: (Resource Oriented Architecture)
+=================================================================================================:
+
+Open Source Vulnerability Databases:
+NVD (National Vulnerability Database) 
+OSVDB/VulnDB Open Source Vulnerability Database
+OWASP (Open Web Application Security Project) library [JiuceShop, webgoat, DVWA, XVWA]
+
+=================================================================================================:
+
+Message queues:
+kafka: 
+- consumers pull messages from Kafka
+- used when you want to handle extensive streams of data from the producer
+- pub-sub model
+- can maintain a message throughput rate of 100k+ msgs/sec 
+
+rabbitmq:
+- supports blocking connections enabling a client to simply sit and wait for a message to be available without the need to poll
+- two modes of message acknowledgement - ack and noack
+- message rate of about 20k+ msgs/sec
+
+sqs:
+- service must be polled for messages with an optional timeout
+- SQS uses visibility timeout for message acknowledgement
+- Standard - atleast-once delivery
+- FIFO - exactly once delivery
+
+=================================================================================================:
+
+
+K8s: 
+- versions: Client Version: v1.14.10, Server Version: v1.16.15
+- [master:] - scheduler, controller, proxy, kubelet, etcd
+- [worker:] - kubelet, contaner runtime, proxy
+- autoscaling does not support rolling upgrades
+- flicker of nodes in a pod is called thrashing (can be updated by providing metrics conatiners rather than on a pod)
+- int conatiner are used to get readiness and liveness probes on the pods/containers
+
+** traffic 
+
+
+** k8s monitoring (cluster and pod monitoring)
+Container metrics are available mostly through cAdvisor and exposed by Heapster
+Unlike DaemonSets, Heapster acts as a normal pod and discovers every cluster node via the Kubernetes API. Using Kubelet (a tool that enables master-node communications) and Kubelet’s open-source agent cAdvisor, Kubernetes and the bridge can store all relevant information about the cluster and its containers.
+
+One approach to monitoring all cluster nodes is to create a special kind of Kubernetes pod called DaemonSets
+https://logz.io/blog/kubernetes-monitoring/
+
+ 5 common monitoring solutions used by Kubernetes users
+ 1. Heapster/InfluxDB/Grafana - (Heapster collect metrics, InfluxDB store in time series database, Grafana to present and aggregate collected data)
+ 2. Prometheus/Grafana - (1,2 combine open source tools that are deployed inside Kubernetes)
+ 3. Heapster/ELK - you can use your own ELK Stack or a hosted solution like Logz.io’s
+ 4. Datadog/Dynatrace - are proprietary APM solutions that provide Kubernetes monitoring.
+ 5. custom (cgroups on container run time)
+
+** deployments, statefulset, daemonset
+- Deployments are usually used for stateless applications. However, you can save the state of deployment by attaching a Persistent Volume to it and make it stateful. Two replicas of the same pod connect to the same PVC
+kubectl scale deployment counter --replicas=2
+Example: For Web Applications 
+
+- Kubernetes resource used to manage stateful applications, no replicasets needed. Every replica of a stateful set will have its own state, and each of the pods will be creating its own PVC(Persistent Volume Claim). So a statefulset with 3 replicas will create 3 pods, each having its own Volume, so total 3 PVCs
+kubectl scale statefulsets counter --replicas=3
+Example: HA DB instances, with one as primary (RW) and others as secondary (R)
+
+- DaemonSet is a controller that ensures that the pod runs on all the nodes of the cluster. If a node is added/removed from a cluster, DaemonSet automatically adds/deletes the pod.
+Example: monitoring exporters, log collectors
+
+** rolling upgrade vs blue/green
+RollingUpdate: (new version is applied by replacing instances in the existing setup) one replica pod will go down and the updated pod will come up, then the next replica pod will go down in same manner 
+
+Blue/Green: (completely isolated setup is created for the new version) 
+
+All types:
+    Reckless Deployment: - Destroy the old, provision the new, don’t care for consequences.
+    Rolling Upgrade: - gradually ramping up new code while decommissioning old code
+    Blue/Green Deployment: - Test the new version, and once ready start routing users to the new version. 
+    Canary Deployment: - Deploy the new version into production alongside the old one, carefully controlling who gets to use the new version. Monitor and tune the experiment while gradually expanding it’s population.
+    Versioned Deployment: - Always keep all versions alive, while letting the user choose which version to use
+
+** k8s secret and vaults
+When you create a Secret with kubectl create -f secret. yaml , Kubernetes stores it in etcd. The Secrets are stored in clear in etcd unless you define an encryption provider.
+
+
+=================================================================================================:
+
+python:
+print(dir(<VARIABLE>))
+print(type(<VARIABLE>))
+print(help(str.lower))
+
+## start a webserver from CLI
+python3 -m http.server 8080
+python3 -m smtpd -c DebuggingServer -n localhost:1025
+
+## create phishing site
+wget -r -nH https://www.google.com
+
+- first class functions (functions as args and return types)
+- closures (inner func closes over the outer func - args from outer function is caried over to inner function)
+- unittest () -- python -m unittest test_func.py  --- full coverage important but having a consolidated set of tests is even better!
+- logging () -- file and straem handlers, default is warning (debug 10, info 20, warning 30, error 40, severe 50) - logging.exception to print log trace
+- with open('file', 'r') as f:  == here "with" is a context manager
+- sqlalchemy in python
+
+- jupyter: pip install jupyterlab, jupyter notebook (runs on localhost port 8888)
+
+- pip instal jupyterlab; jupyter notebook 
+- pandas: df.shape, df.info(), df.describe(), df.head(), df.tail(), pd.set_option('display.max_columns', 85), df['COLUMN'].value_counts()
+
+- multithreading - concurrent activity, I/O bound tasks, no new process, faster, 
+- multiprocessing - parallel activity, CPU bound tasks, new process are created, slower
+
+- subprocess - to run linux commands
+- context handlers - with open('file', r) as f: (no need to used f.close() as we do if we use f.open())
+
+- Tkinter - UI 
+- pyarmor - used to obfuscate python scripts
+- asyncio -
+- requests -
+- beautifulsoup -
+- concurrent.futures
+
+=================================================================================================:
+bash:
+- $$, $0, $1, $2, $_, $?, $#, $@, $*
+
+=================================================================================================:
+helm: 
+- helm repo add <NAME> <URL>
+- helm repo update
+- helm repo list
+- helm search repo <NAME>
+- helm show values <NAME> > /tmp/values.txt (contains download policy, image, deployment mode, port-traefic(9090)-http(80)-https(443), , persistent volume..)
+- helm install <RELEAE_NAME(any)> <REPO_ID(as per hrlp repo list)> --values <YAML_FILE>  -n <NAMESPACE> --create-namespace
+- helm list -n <RELEASE_NAME>
+
+kubectl port-forward -n <NAMESPACE> <POD> 9000:9000
+http://<IP>:9000/dashboard/
+
+=================================================================================================:
+
+LXC:
+lxc-create -t download -n my-container
+lxc-start -n my-container -d
+lxc-info -n my-container
+lxc-ls -f
+lxc-attach -n my-container
+lxc-stop -n my-container
+lxc-destroy -n my-container
+
+=================================================================================================:
+
+Openssl:
+openssl s_client -connect example.com:443
+openssl s_client -connect example.com:443 -tls1_3
+openssl s_client -connect example.com:443 -tlsextdebug
+openssl s_client -connect example.com:443 -showcerts
+openssl s_client -connect ldap-host:389 -starttls ldap-host
+echo | openssl s_client -connect example.com:443 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > example.com.pem
+openssl s_client -verify_return_error -connect example.com:443
+
+=================================================================================================:
+
+CURL:
+- Token based:: curl -H "Authorization: Bearer <TOKEN>" https://example.com
+- Basic Auth:: curl --user username:password https://example.com
+- Key/cert based: curl -v -GET --key key.pem --cert cert.pem https://example.com
+
+=================================================================================================:
+
+DNS record types (RR - resource records 30 diff types!):
+- CNAME : alias for the same domain (www, search, maps..)
+- A, AAAA: IPv4 and v6 records (IP to names)
+- MX: mail exchange records, will have mail in A record as well
+- SRV: used to load services (ldap in windows)
+- NS: name server records
+- PTR: reverse of A/AAAA records 
+- TXT: used for public information 
+
+=================================================================================================:
+
+DHCP: (DORA: discover-offer-request-acknowledge)
+- dhcp proxy/relay/IP helper (because routers drop broadcast messages by default) - converts broadcat to unicast
+- on UDP, port 68/67
+- IPAM (IP address management) - used to monitor IP usage
+
+=================================================================================================:
+
+Terraform:
+- init
+- plan -auto-approve or -input=false 
+- show
+- apply
+- destroy
+- get (download modules)
+- graph
+- state
+
+=================================================================================================:
+
+AWS lambda:
+import json
+
+def lambda_handler(event, context):
+    return
+        {
+         'statusCode': 200,
+         'body': json.dumps('Hello..')
+         }
+
+=================================================================================================:
+    
+Pandas: https://www.youtube.com/watch?v=RlIiVeig3hc
+
+df = pd.read.csv('file1')
+df = pd.read.csv('file1', sep='\t')
+df = pd.read.csv('file1', parse_type=['Date'])
+
+orders['item_price'] = df.item_price.str.replace('$', '').astype('float')
+
+##get versions:
+pd.__version__
+pd.show_versions()
+
+##generate sample DF data
+pd.DateFrame(np.random.rand(4,8), columns=list('abcdefgh'))
+
+##rename column names
+df.cloumns = ['col_a', 'col_b']
+df.columns = df.columns.str.replace(' ', '_')
+df.app_prefix('X_')
+df.app_suffix('_X')
+
+## reverse row orders
+df.loc[::-1].head()
+df.loc[::-1].reset_index(drop=True).head()
+
+## reverse column names
+df.loc[:, ::-1].head()
+
+# select data type columns
+df.dtypes()
+df.select_dtypes(include=['number','object','datetime', 'category']).head()
+df.select_dtypes(exclude=['number']).head()
+
+# convert strings to numbers
+df = df.apply(pd.to_numeric, errors='coerce').fillna(0) ## all the columns
+
+# convert Series
+my_series = pd.to_numeric(my_series)
+
+# convert column "a" of a DataFrame
+df["a"] = pd.to_numeric(df["a"])
+
+df.to_numeric() 
+df.astype()
+df.infer_objects()
+df.convert_dtypes()
+
+# allocate memory
+df.info(memory_usage='deep')
+
+# build data frame from multiple files (row wise)
+from glob import glob
+all_files = sorted(glob('data/files*.csv'))
+pd.concat((pd.read_csv(file) for file in all_files), ignore_index=True) 
+
+# build data frame from multiple files (column wise)
+from glob import glob
+all_files = sorted(glob('data/files*.csv'))
+pd.concat((pd.read_csv(file) for file in all_files), axis='columns').head()
+
+# create df from clipboard
+df = pd.read_clipboard()
+df.index
+
+# slpit df into two random subsets
+df_1 = df.sample(frac=0.75, random_state=1234) 
+
+# Filter DF by multiple categories
+df.<COL>.unique()
+df[df.<COL>.isin(['typ1', 'type2'])].head()
+df[~df.<COL>.isin(['typ1', 'type2'])].head()
+
+# filter a DF by largest category
+counts = df.<COL>.value_counts()
+counts.nlargest(3)
+counts.nlargest(3).index
+df[df.<COL>.isin(counts.nlargest(3).index)].head()
+
+# handle missing values
+df.isna().sum()
+df.isna().mean()
+df.dropna(axis='columns').head()
+
+# split string into columns
+df.<COL>.str.split(' ', expand=True)
+df[['first', 'second', 'third']] = df.<COL>.str.split(' ', expand=True)
+df['first'] = df.<COL>.str.split(' ', expand=True)[0]
+
+# expand list to columns
+pd.concat([df, df_new], axis='columns')
+
+#aggregate by multiple functions
+df.head(10)
+df[df.<ID> == 1].<COL>.sum()
+df.groupby('ID').<COL>.sum().head() # get the cost of an order by aggregating the items orders per table
+df.groupby('ID').<COL>.agg(['sum', 'count']).head()
+
+#combine the output of an aggregator with a data frame
+total = df.groupby('COL').<COL>.transform('sum')
+df['total'] = total
+df.head(10)
+
+# select a slice of row and column
+df.head()
+df.describe()
+df.describe().loc['min':'max']
+df.describe().loc['min':'max', 'COL':'COL2']
+
+# reshape a multi indexed series
+df.<COL>.mean()
+df.groupby('COL').<COL>.mean()
+df.groupby('COL').<COL>.mean().unstack()
+
+# create a pivot table
+df.pivot_table(index='', columns='', values='', aggfunc='', margins=True)
+
+# convert continuous data to categorical data
+pd.cut(df.<COL>, bins=[0, 18, 25, 99], labels=['child', 'young adult', 'adult']).head(10)
+
+# change display options
+pd.set_option('display.float_format', '{:.2f}'.format)
+pd.reset_option('display.float_format')
+
+# add style to data frames
+format_type = {'<COL0>':'{:%m/%d/%y}', '<COL1>':'${:.2f}', '<COL2>':'{:,}'}
+df.style.format(format_type)
+
+(df.style.format(format_type)
+.hide_index()
+.highlight_min('<COL>', color='red')
+.highlight_max('<COL>', color='lightgreen')
+.background_gradient(subset='<COL>', cmap='Blues')
+.bar('<COL>', color='lightblue', align='zero')
+.set_caption('name of the caption')
+)
+
+# profile a dataframe - to quick view
+import pandas_profiling
+pandas_profiling.ProfileReport(df)
+
+=================================================================================================:

@@ -34,6 +34,13 @@ How to resolve route conflict in python flask?
 - Can be handled in the LB, by providing context rules (like we do in httpd conf contexts)
 https://stackoverflow.com/questions/16903683/resolving-conflicts-between-static-and-dynamic-routes-using-flask/16905676
 
+PODMAN vs Docker:
+- Podman and Docker have the same set of commands
+- Podman has no equivalent for docker swarm
+- Podman is daemon less (unlike docker where dockerd is required to be run in the background)
+- In Podman, containers can form “pods” that operate together (similar to the Kubernetes Pod concept)
+- Images and containers are stored in your user’s $HOME folder. When you run podman ps or podman images, you’ll only see your content instead of every resource on the system.
+
 ===================================================================================================:
 SQS:
 - long polling, reduces emtpy responses and also reduces cost

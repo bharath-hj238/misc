@@ -24,6 +24,17 @@ sudo vs su:
 
 =================================================================================================:
 
+How do we swicth over from Primary to DR?
+- By SSL Handoff at CDN, https://www.thesslstore.com/blog/ssl-offloading-bridging-termination/
+
+How to stop a POD gracefully because its not performing as expected?
+- POD tainting - https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+
+How to resolve route conflict in python flask?
+- Can be handled in the LB, by providing context rules (like we do in httpd conf contexts)
+https://stackoverflow.com/questions/16903683/resolving-conflicts-between-static-and-dynamic-routes-using-flask/16905676
+
+===================================================================================================:
 SQS:
 - long polling, reduces emtpy responses and also reduces cost
 - Queue metadata has 10 atttibutes
